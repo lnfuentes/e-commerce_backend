@@ -73,8 +73,8 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        const response = await productManager.create({title, description, code, price, thumbnail, stock, status, category});
-        res.status(200).send({message: "Producto Creado", response});
+        const result = await productManager.create({title, description, code, price, thumbnail, stock, status, category});
+        res.status(200).send({message: "Producto Creado", result});
     } catch (error) {
         res.status(500).send(error.message);
     }

@@ -37,19 +37,35 @@ class CartManager {
         }
     }
 
-    async addProduct(cartId, productId) {
+    async deleteCartProduct(cid, pid) {
         try {
-            const result = await cartModel.find({_id: cartId});
-            if (result.length === 0) {
-                throw new Error('carrito no encontrado');
-            } else {
-                result[0].products.push(productId);
-                await cartModel.findByIdAndUpdate(cartId, result[0]);
+            let i;
+            const cart = await cartModel.find({_id: cid});
+            const Nproducts = cart[0].products;
+            Nproducts.forEach((p, index) => {
+                if(pid == p._id.valueOf()) {
+                    i = index;
+                }
+            });
+            if(!isNaN(i)) {
+                Nproducts.splice(i, 1);
+                const result = await cartModel.findByIdAndUpdate(cid, {products: Nproducts});
+                return result;
             }
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error)
         }
     }
+
+    async deleteAllProducts(cid) {
+        const result = cartModel.findByIdAndUpdate(cid, {products: []});
+        return result;
+    }
+
+    async updateCart(cid, products) {
+        const result = cartModel.find({ _id: cid }).updateMany({ products: products });
+        return result;
+      }
 
     async updateCartProd(cartId, productId) {
         const myProduct = {
@@ -57,38 +73,51 @@ class CartManager {
           quantity: 1,
         };
         try {
-          const result = await cartModel.find({ _id: cartId });
-    
-        //   if (result[0].products.length === 0) {
-        //     result[0].products.push(myProduct);
-        //     const resultSave = await cartModel.findByIdAndUpdate(cartId, {
-        //       products: result[0].products,
-        //     });
-        //     return resultSave;
+            const result = await cartModel.find({ _id: cartId });
 
-        //   } else {
-            const index = result[0].products.findIndex(
-              (product) => {product._id.valueOf() === myProduct._id; console.log(product._id.valueOf(), myProduct._id)} 
-            );
-            console.log(index);
+            const index = result[0].products.findIndex(prod => {
+                const idToString = prod._id.valueOf();
+                return idToString === myProduct._id;
+            });
             if (index === -1) {
-              result[0].products.push(myProduct);
-              const resultSave = await cartModel.findByIdAndUpdate(cartId, {
-                products: result[0].products,
-              });
-              return resultSave;
+                result[0].products.push(myProduct);
+                const resultSave = await cartModel.findByIdAndUpdate(cartId, {
+                    products: result[0].products,
+                });
+                return resultSave;
             } else {
-              result[0].products[index].quantity += 1;
-              const resultSave = await cartModel.findByIdAndUpdate(cartId, {
-                products: result[0].products,
-              });
-              return resultSave;
+                result[0].products[index].quantity += 1;
+                const resultSave = await cartModel.findByIdAndUpdate(cartId, {
+                    products: result[0].products,
+                });
+                return resultSave;
             }
-        //   }
         } catch (error) {
           throw new Error(error);
         }
-      }
+    }
+
+    async updateProductQuantity(cid, pid, qty) {
+        try {
+            let i;
+            const cart = await cartModel.find({_id: cid});
+            const Nproducts = cart[0].products;
+            Nproducts.forEach((p, index) => {
+                if (pid == p._id.valueOf()) {
+                    i = index;
+                }
+            }); 
+
+            if(!isNaN(i)) {
+                Nproducts[i].quantity = qty.quantity;
+                const result = await cartModel.findByIdAndUpdate(cid, {products: Nproducts});
+                return result;
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+        
+    }
 }
 
 class ProductManager {

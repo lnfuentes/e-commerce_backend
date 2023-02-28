@@ -14,8 +14,8 @@ const stringCollection =`mongodb+srv://${userMongo}:${passMongo}@coder-cluster.n
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use('/api/productos', productRouter);
-app.use('/api/carrito', cartRouter);
+app.use('/api/products', productRouter);
+app.use('/api/cart', cartRouter);
 
 const server = app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

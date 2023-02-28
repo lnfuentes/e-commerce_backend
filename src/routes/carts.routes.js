@@ -40,25 +40,58 @@ router.post('/:cid/product/:pid', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
-    const {id} = req.params;
+router.delete('/:cid', async (req, res) => {
+    const {cid} = req.params;
     try{
-        const response = await cartManager.delete(id);
-        res.status(200).send({message: 'Carrito eliminado', response});
+        const result = await cartManager.delete(cid);
+        res.status(200).send({message: 'Carrito eliminado', result});
     } catch(error) {
         res.status(500).send(error.message);
     }
 });
 
-router.put('/:id', async (req, res) => {
-    const {id} = req.params;
+router.delete('/:cid/products/:pid', async (req, res) => {
+    try{
+        const {cid} = req.params;
+        const {pid} = req.params;
+        const result = await cartManager.deleteCartProduct(cid, pid);
+        res.status(200).send({message: 'Producto eliminado', result});
+    } catch(error) {
+        res.status(500).send(error.message);
+    }
+})
+
+router.delete('/:cid/products', async (req, res) => {
+    try {
+        const {cid} = req.params;
+        const result = await cartManager.deleteAllProducts(cid);
+        res.status(200).send({message: 'Carrito vaciado', result});
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
+router.put('/:cid', async (req, res) => {
+    const {cid} = req.params;
     const newProduct = req.body;
     try {
-        const response = await cartManager.update(id, newProduct);
-        res.status(200).send({message: 'Carrito actualizado', response});
+        const result = await cartManager.updateCart(cid, newProduct);
+        res.status(200).send({message: 'Carrito actualizado', result});
     } catch (error) {
-        throw new Error(error.message);
+        res.status(500).send(error.message);
     }
 });
+
+router.put('/:cid/products/:pid', async (req, res) => {
+    try {
+        const {cid} = req.params;
+        const {pid} = req.params;
+        const quantity = req.body;
+        const result = await cartManager.updateProductQuantity(cid, pid, quantity);
+        res.status(200).send({message: 'Cantidad del producto actualizada', result})
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
 
 export default router;
