@@ -3,6 +3,11 @@ import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import productRouter from './routes/products.routes.js';
 import cartRouter from './routes/carts.routes.js';
+import loginRouter from './routes/login.routes.js';
+import signupRouter from './routes/signup.routes.js';
+import profileRouter from './routes/profile.routes.js'
+import { engine } from 'express-handlebars';
+import viewRoutes from './routes/view.routes.js';
 
 dotenv.config();
 const app = express();
@@ -14,8 +19,19 @@ const stringCollection =`mongodb+srv://${userMongo}:${passMongo}@coder-cluster.n
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(express.static('public'));
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/cart', cartRouter);
+app.use('/login', loginRouter);
+app.use('/signup', signupRouter);
+app.use('/profile', profileRouter);
+app.use('/', viewRoutes);
+
+app.set('view engine', 'ejs');
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
+app.set('views', './views');
 
 const server = app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

@@ -58,43 +58,35 @@ class CartManager {
     }
 
     async deleteAllProducts(cid) {
-        const result = cartModel.findByIdAndUpdate(cid, {products: []});
+        const result = await cartModel.findByIdAndUpdate(cid, {products: []});
         return result;
     }
 
     async updateCart(cid, products) {
-        const result = cartModel.find({ _id: cid }).updateMany({ products: products });
+        const result = await cartModel.find({ _id: cid }).updateMany({ products: products });
         return result;
       }
 
     async updateCartProd(cartId, productId) {
-        const myProduct = {
-          _id: productId,
-          quantity: 1,
-        };
-        try {
-            const result = await cartModel.find({ _id: cartId });
+        let i;
+        const cart = await cartModel.find({_id: cartId});
+        const newProduct = {product: productId, quantity: 1};
+        const Nproducts = cart[0].products;
 
-            const index = result[0].products.findIndex(prod => {
-                const idToString = prod._id.valueOf();
-                return idToString === myProduct._id;
-            });
-            if (index === -1) {
-                result[0].products.push(myProduct);
-                const resultSave = await cartModel.findByIdAndUpdate(cartId, {
-                    products: result[0].products,
-                });
-                return resultSave;
-            } else {
-                result[0].products[index].quantity += 1;
-                const resultSave = await cartModel.findByIdAndUpdate(cartId, {
-                    products: result[0].products,
-                });
-                return resultSave;
+        Nproducts.forEach((p, index) => {
+            if(productId === p._id.valueOf()) {
+                i = index;
             }
-        } catch (error) {
-          throw new Error(error);
+        });
+
+        if (!isNaN(i)) {
+            Nproducts[i].quantity++;
+        } else {
+            Nproducts.push(newProduct);
         }
+
+        const result = await cartModel.findByIdAndUpdate(cartId, {products: Nproducts});
+        return result;
     }
 
     async updateProductQuantity(cid, pid, qty) {

@@ -7,7 +7,7 @@ router.get("/products", async (req, res) => {
 });
 
 router.get("/cart", async (req, res) => {
-  res.render("cart", { title: "Carrito" });
+  res.render("carts", { title: "Carrito" });
 });
 
 export default router;

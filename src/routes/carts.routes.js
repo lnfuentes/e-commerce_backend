@@ -3,12 +3,12 @@ import {cartModel} from "../models/cart.js"
 import { CartManager } from "../data/classes/DBManager.js";
 
 const cartManager = new CartManager();
-const carts = cartManager.read()
 const router = Router();
 
 router.get('/', async (req, res) => {
     try {
-        const result = await carts;
+        const limit = req.query.limit;
+        const result = await cartManager.read(limit);
         res.send(result);
     } catch (error) {
         res.status(500).send(error.message);
@@ -29,16 +29,19 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.post('/:cid/product/:pid', async (req, res) => {
+router.post("/:cid/:pid", async (req, res) => {
     try {
-        const cid = req.params.cid;
-        const pid = req.params.pid;
-        const result = await cartManager.updateCartProd(cid, pid);
-        res.status(200).send({message: 'Carrito actualizado', result})
-    } catch (error) {
-        res.status(500).send(error.message);
+      const {cid} = req.params;
+      const {pid} = req.params;
+      const result = await cartManager.updateCartProd(cid, pid);
+      res.send({
+        message: "Carrito actualizado", result});
+    } catch (err) {
+      res.status(500).send("Cart not found");
+      const error = err.message;
+      console.log(error);
     }
-})
+  });
 
 router.delete('/:cid', async (req, res) => {
     const {cid} = req.params;
