@@ -88,7 +88,7 @@ elementExist('login') && document.getElementById('login').addEventListener('clic
   }).then(res => res.json())
   .then(data => {
     if (data.message === "success") {
-      window.location.href = "/profile";
+      window.location.href = "/products";
     } else {
       alert("usuario no encontrado");
     }

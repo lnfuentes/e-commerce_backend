@@ -1,12 +1,14 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { engine } from 'express-handlebars';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import productRouter from './routes/products.routes.js';
 import cartRouter from './routes/carts.routes.js';
 import loginRouter from './routes/login.routes.js';
 import signupRouter from './routes/signup.routes.js';
-import profileRouter from './routes/profile.routes.js'
-import { engine } from 'express-handlebars';
 import viewRoutes from './routes/view.routes.js';
 
 dotenv.config();
@@ -20,12 +22,25 @@ const stringCollection =`mongodb+srv://${userMongo}:${passMongo}@coder-cluster.n
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
+app.use(cookieParser());
+app.use(
+    session({
+        secret: 'secretCoder',
+        resave: true,
+        saveUninitialized: true,
+        store: MongoStore.create({
+            mongoUrl: stringCollection,
+            mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
+            ttl: 30
+        })
+    })
+);
+
+// Routes
 app.use('/api/products', productRouter);
-app.use('/api/cart', cartRouter);
 app.use('/api/cart', cartRouter);
 app.use('/login', loginRouter);
 app.use('/signup', signupRouter);
-app.use('/profile', profileRouter);
 app.use('/', viewRoutes);
 
 app.set('view engine', 'ejs');
@@ -54,3 +69,7 @@ const okStartData = () => {
     else return false;
 }
 okStartData() && environment();
+
+app.get('/', (req, res) => {
+    res.send('hello world')
+})
