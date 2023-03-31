@@ -1,4 +1,21 @@
 <div>
+    {{#if session.user}}
+        <ul>
+            <li>
+                <p>Bienvenido/a {{session.user.first_name}}</p>
+            </li>
+        </ul>
+    {{else}}
+        <ul>
+            <li>
+                <a href="/login">Iniciar Sesion</a>
+            </li>
+            <li>
+                <a href="/signup">Registrarse</a>
+            </li>
+        </ul>
+    {{/if}}
+
     <h2>Productos</h2>
     <div id="contenidoProductos"></div>
 </div>

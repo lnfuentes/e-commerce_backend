@@ -16,7 +16,7 @@ router.post('/', passport.authenticate('login', {failureRedirect: '/login'}) , a
         age: req.user.age,
         email: req.user.email
     }
-
+    
     res.status(200).json({message: 'success', data: req.user});
 });
 

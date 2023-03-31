@@ -33,12 +33,9 @@ const initializePassport = () => {
     }))
 
     passport.use('login', new LocalStrategy({
-        usernameField: 'username',
-        passwordField: 'password'
+        usernameField: 'username'
     }, async (username, password, done) => {
         try {
-            
-        } catch (error) {
             const user = await userModel.findOne({email: username});
             if(!user) {
                 return done(null, false, {message: 'Usuario no encontrado'})
@@ -50,6 +47,8 @@ const initializePassport = () => {
                     return done(null, false, {message: 'Contraseña incorrecta'});
                 }
             }
+        } catch (error) {
+            return done(error)
         }
     }));
 }
@@ -59,9 +58,8 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async (id, done) => {
-    await userModel.findById(id, (err, user) => {
-        done(err, user);
-    })
+    let user = await userModel.findById(id);
+    done(null, user);
 });
 
 export default initializePassport;
