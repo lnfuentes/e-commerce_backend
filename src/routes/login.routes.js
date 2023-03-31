@@ -1,5 +1,5 @@
 import { Router } from "express";
-import userModel from "../models/users.js";
+import passport from "passport";
 
 const router = Router();
 
@@ -7,19 +7,17 @@ router.get('/', (req, res) => {
     res.render('login', {title: 'Login', style: 'login.css'});
 });
 
-router.post('/', async (req, res) => {
-    const {username, password} = req.body;
-    try {
-        const response = await userModel.findOne({email: username, password: password});
-        if(response) {
-            req.session.user = response;
-            res.status(200).json({message: 'success', data: response});
-        } else {
-            res.status(404).json({message: 'error', data: 'User not found'});
-        }
-    } catch (error) {
-        res.status(500).json({error: error.message});
+router.post('/', passport.authenticate('login', {failureRedirect: '/login'}) , async (req, res) => {
+    if(!req.user) return res.status(400).json({message: 'error', error: 'Datos Invalidos'});
+
+    req.session.user = {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        age: req.user.age,
+        email: req.user.email
     }
+
+    res.status(200).json({message: 'success', data: req.user});
 });
 
 export default router;

@@ -5,11 +5,14 @@ import { engine } from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 import productRouter from './routes/products.routes.js';
 import cartRouter from './routes/carts.routes.js';
 import loginRouter from './routes/login.routes.js';
 import signupRouter from './routes/signup.routes.js';
 import viewRoutes from './routes/view.routes.js';
+import forgotRouter from './routes/forgot.routes.js';
 
 dotenv.config();
 const app = express();
@@ -22,7 +25,7 @@ const stringCollection =`mongodb+srv://${userMongo}:${passMongo}@coder-cluster.n
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
-app.use(cookieParser());
+app.use(cookieParser('secretCoder'));
 app.use(
     session({
         secret: 'secretCoder',
@@ -35,12 +38,16 @@ app.use(
         })
     })
 );
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/login', loginRouter);
 app.use('/signup', signupRouter);
+app.use('/forgot', forgotRouter);
 app.use('/', viewRoutes);
 
 app.set('view engine', 'ejs');

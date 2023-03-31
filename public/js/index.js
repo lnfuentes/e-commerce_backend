@@ -125,4 +125,24 @@ elementExist('signup') && document.getElementById('signup').addEventListener('cl
     .then(data => console.log(data))
     .catch(error => console.log(error))
   }
-})
+});
+
+
+// ACTUALIZAR CONTRASEÑA //
+
+elementExist("forgot") && document.getElementById("forgot").addEventListener("click", e => {
+  const email = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const repeatPassword = document.getElementById("repeatPassword").value;
+
+    fetch('/forgot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password, repeatPassword})
+    }).then(res => res.json())
+    .then(data => console.log(data))
+    .catch(error => console.log(error))
+    
+});
