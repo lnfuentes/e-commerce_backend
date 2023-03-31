@@ -29,8 +29,8 @@ app.use(cookieParser('secretCoder'));
 app.use(
     session({
         secret: 'secretCoder',
-        resave: false,
-        saveUninitialized: false,
+        resave: true,
+        saveUninitialized: true,
         store: MongoStore.create({
             mongoUrl: stringCollection,
             mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},

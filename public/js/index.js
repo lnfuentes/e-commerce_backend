@@ -122,7 +122,12 @@ elementExist('signup') && document.getElementById('signup').addEventListener('cl
         age
       })
     }).then(res => res.json())
-    .then(data => console.log(data))
+    .then(data => {
+      console.log(data);
+      if (data.message === "success") {
+        window.location.href = "/login";
+      }
+    })
     .catch(error => console.log(error))
   }
 });

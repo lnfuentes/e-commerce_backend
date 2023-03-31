@@ -20,4 +20,10 @@ router.post('/', passport.authenticate('login', {failureRedirect: '/login'}) , a
     res.status(200).json({message: 'success', data: req.user});
 });
 
+router.get('/github', passport.authenticate('github', {scope:['user: email']}), async (req, res) => {});
+
+router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/login'}), async (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/products');
+})
 export default router;

@@ -1,7 +1,11 @@
 import passport from "passport";
+import GitHubStrategy from 'passport-github2';
 import local from "passport-local";
 import userModel from "../models/users.js";
 import { isValidPassword, createHash } from "../utils.js";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const LocalStrategy = local.Strategy;
 const initializePassport = () => {
@@ -51,6 +55,32 @@ const initializePassport = () => {
             return done(error)
         }
     }));
+
+    passport.use('github', new GitHubStrategy({
+        clientID: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        callbackURL: 'http://localhost:3434/login/githubcallback'
+    }, async (accessToken, refreshToken, profile, done) => {
+        try{
+            console.log(profile);
+            let user = await userModel.findOne({email: profile._json.email});
+            if(!user) {
+                let newUser = {
+                    first_name: profile._json.name,
+                    last_name: '',
+                    age: 18,
+                    email: profile._json.email,
+                    password:''
+                }
+                let result = await userModel.create(newUser);
+                done(null, result);
+            } else {
+                done(null, user);
+            }
+        } catch(error) {
+            return done(error);
+        }
+    }))
 }
 
 passport.serializeUser((user, done) => {
