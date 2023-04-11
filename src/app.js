@@ -34,7 +34,7 @@ app.use(
         store: MongoStore.create({
             mongoUrl: stringCollection,
             mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
-            ttl: 30
+            ttl: 10000
         })
     })
 );
